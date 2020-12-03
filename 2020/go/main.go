@@ -205,17 +205,34 @@ func main() {
 		1987,
 		1769,
 	}
+
+	var res int
+	for i, v := range input {
+		target := 2020 - v
+		modified_input := []int{}
+		left := input[:i]
+		right := input[i+1:]
+		modified_input = append(left, right...)
+		sum := v * sumto(target, modified_input)
+		if sum != 0 {
+			res = sum
+		}
+	}
+	fmt.Println(res)
+}
+
+func sumto(target int, input []int) int {
 	cache := make(map[int]int)
 	res := 0
 	for _, v := range input {
 		cached_value, exists := cache[v]
 		if !exists {
-			key := 2020 - v
+			key := target - v
 			cache[key] = v
 		} else {
 
 			res = cached_value * v
 		}
 	}
-	fmt.Println(res)
+	return res
 }
