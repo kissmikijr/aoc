@@ -2,6 +2,8 @@ const axios = require("axios")
 const fs = require("fs")
 const path = require("path")
 
+require('dotenv').config()
+
 
 module.exports = async (day) =>{
     let input;
