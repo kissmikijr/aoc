@@ -18,22 +18,22 @@ const main = async () => {
       )
     );
   }
-
-  const potentionWinnerBoards = [];
+  const potentialWinnerBoards = [];
   boards.forEach((board) => {
+    const boards = [];
     for (i = 0; i < board.length; i++) {
       const row = board[i];
-      const sum = [];
+      const bingoNumberIndexes = [];
       row.forEach((e) => {
         const index = bingoNumbers.indexOf(e);
         if (index == -1) {
           return;
         } else {
-          sum.push(index);
+          bingoNumberIndexes.push(index);
         }
       });
-      if (sum.length == 5) {
-        potentionWinnerBoards.push([board, Math.max(...sum), i, null]);
+      if (bingoNumberIndexes.length == 5) {
+        boards.push([board, Math.max(...bingoNumberIndexes), i, null]);
       }
     }
 
@@ -46,26 +46,36 @@ const main = async () => {
         board[4][j],
       ];
 
-      const sum = [];
+      const bingoNumberIndexes = [];
       column.forEach((e) => {
         const index = bingoNumbers.indexOf(e);
         if (index == -1) {
           return;
         } else {
-          sum.push(index);
+          bingoNumberIndexes.push(index);
         }
       });
-      if (sum.length == 5) {
-        potentionWinnerBoards.push([board, Math.max(...sum), null, j]);
+      if (bingoNumberIndexes.length == 5) {
+        boards.push([board, Math.max(...bingoNumberIndexes), null, j]);
       }
     }
+    let smallestBingoNumberIndex = Number.POSITIVE_INFINITY;
+    let winnerObj = null;
+    boards.forEach((obj) => {
+      if (obj[1] < smallestBingoNumberIndex) {
+        winnerObj = obj;
+        smallestBingoNumberIndex = obj[1];
+      }
+    });
+    potentialWinnerBoards.push(winnerObj);
   });
+
   let winnerBoard = [];
-  let smallestDistance = Number.POSITIVE_INFINITY;
-  potentionWinnerBoards.forEach((b) => {
-    if (b[1] < smallestDistance) {
+  let distance = Number.NEGATIVE_INFINITY;
+  potentialWinnerBoards.forEach((b) => {
+    if (b[1] > distance) {
       winnerBoard = b;
-      smallestDistance = b[1];
+      distance = b[1];
     }
   });
   console.log(winnerBoard, "KEK");
