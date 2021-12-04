@@ -88,7 +88,6 @@ const main = async () => {
   let winnerNumberIndex = Number.NEGATIVE_INFINITY;
 
   if (winnerBoard[2] > 0) {
-    console.log(winnerBoard[2]);
     winnerBoard[0][winnerBoard[2]].forEach((n) => {
       const index = bingoNumbers.indexOf(n);
       if (index > winnerNumberIndex) {
