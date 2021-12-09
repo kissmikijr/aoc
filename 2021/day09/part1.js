@@ -33,21 +33,6 @@ const main = async () => {
       if (nextRow) {
         down = nextRow[i];
       }
-      //   console.log(p, left, right, up, down);
-      //   console.log(
-      //     "p: ",
-      //     p,
-      //     "right: ",
-      //     right,
-      //     "left: ",
-      //     left,
-      //     "up: ",
-      //     up,
-      //     "down: ",
-      //     down,
-      //     "i: ",
-      //     i
-      //   );
       if (p < left && p < right && p < up && p < down) {
         console.log(p, "Low point");
         result += p + 1;
