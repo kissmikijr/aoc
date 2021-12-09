@@ -26,5 +26,5 @@ module.exports = async (day) => {
     input = response.data;
   }
 
-  return input.split("\n");
+  return input.split("\r\n");
 };
