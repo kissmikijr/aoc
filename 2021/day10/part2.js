@@ -2,7 +2,6 @@ const fetchInput = require("../fetchInput");
 
 const main = async () => {
   const input = await fetchInput(10);
-  console.log(input);
   const validChars = {
     "<": ">",
     "(": ")",
@@ -18,34 +17,50 @@ const main = async () => {
   };
 
   let score = 0;
-  //stack = ["]", ")", }, )]
-
+  const remainingLines = [];
   input.forEach((row) => {
     const stack = [];
     const arr = row.split("");
-    console.log(arr);
+    remainingLines.push(arr);
     for (i = 0; i < arr.length; i++) {
       const c = arr[i];
-      console.log(c);
-      console.log(invalidChars.has(c));
       if (stack[stack.length - 1] === c) {
-        console.log(
-          stack[stack.length - 1] === c,
-          "Popping: ",
-          stack[stack.length - 1]
-        );
         stack.pop();
       } else if (invalidChars.has(c)) {
-        console.log("Illegeal character: ", c);
         score += scoreTable[c];
+        remainingLines.pop();
         break;
       } else {
-        console.log("Pushing: ", "for C: ", c, validChars[c]);
         stack.push(validChars[c]);
       }
     }
   });
-  console.log(score);
+
+  const scores = [];
+  const part2ScoreTable = {
+    ")": 1,
+    "]": 2,
+    "}": 3,
+    ">": 4,
+  };
+  remainingLines.forEach((row) => {
+    const stack = [];
+    row.forEach((c) => {
+      if (stack[stack.length - 1] === c) {
+        stack.pop();
+      } else {
+        stack.push(validChars[c]);
+      }
+    });
+    let score = 0;
+    stack.reverse().forEach((s) => {
+      score *= 5;
+      score += part2ScoreTable[s];
+    });
+    scores.push(score);
+  });
+
+  console.log(scores.sort((a, b) => a - b)[(scores.length - 1) / 2]);
 };
 
 main();
