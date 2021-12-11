@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: advent-of-code
+  description: Repository to host the code for Advent of Code
+spec:
+  type: service
+  owner: kissmikijr
+  lifecycle: experimental
