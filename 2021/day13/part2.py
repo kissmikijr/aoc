@@ -3,7 +3,8 @@ def fold_x(paper, x):
     new_paper = [row[:x] for row in paper]
 
     for i, row in enumerate(half):
-        for j, s in enumerate(reversed(row)):
+        row = reversed(row)
+        for j, s in enumerate(row):
             if s == "#":
                 new_paper[i][j] = s
 
@@ -14,7 +15,8 @@ def fold_y(paper, y):
     new_paper = paper[:y]
 
     half = paper[y + 1:]
-    for i, row in enumerate(reversed(half)):
+    half = reversed(half)
+    for i, row in enumerate(half):
         for j, s in enumerate(row):
             if s == "#":
                 new_paper[i][j] = s
@@ -27,10 +29,12 @@ def main():
         matrix = [[int(x) for x in y.split(",")]
                   for y in matrix.read().split("\n")]
     x_max, y_max = max(matrix, key=lambda a: a[0])[0] + 1, max(
-        matrix, key=lambda a: a[1])[1] + 1
+        matrix, key=lambda a: a[1])[1] + 2
     paper = [[" "] * x_max] * y_max
     paper = [row[:] for row in paper]
 
+    print(x_max, y_max)
+    print(len(paper), len(paper[0]))
     for row in matrix:
         x, y = row[0], row[1]
         paper[y][x] = "#"
@@ -52,6 +56,15 @@ def main():
     )
     for x in new_paper:
         print(" ".join(x))
+
+
+def count_hashtags(paper):
+    hashtags = 0
+    for x in paper:
+        for p in x:
+            if p == "#":
+                hashtags += 1
+    return hashtags
 
 
 if __name__ == "__main__":
