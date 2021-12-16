@@ -1,4 +1,5 @@
 from copy import deepcopy
+from queue import PriorityQueue
 
 
 def bump_matrix(matrix):
@@ -23,7 +24,20 @@ def create_matrix_row(matrix, length):
     return big_chungus_matrix_row
 
 
-import numpy as np
+def get_neighbors(matrix, node):
+    j, i = node[0], node[1]
+
+    neighbors = []
+    if j - 1 >= 0 and (j - 1, i):
+        neighbors.append(matrix[j - 1][i])
+    if j + 1 < len(matrix):
+        neighbors.append(matrix[j + 1][i])
+    if i - 1 >= 0 and (j, i - 1):
+        neighbors.append(matrix[j][i - 1])
+    if i + 1 < len(matrix):
+        neighbors.append(matrix[j][i + 1])
+
+    return []
 
 
 def main():
@@ -40,78 +54,29 @@ def main():
             first_row.append(z)
 
     matrix = first_row
-    visited = set()
-    solution = {}
-    unvisited = []
-    for i, row in enumerate(matrix):
-        for j, _ in enumerate(row):
-            solution[(j, i)] = {
-                "prev": None,
-                "sd": float('inf'),
-                "node": (j, i)
-            }
-            unvisited.append({
-                "prev": None,
-                "sd": float('inf'),
-                "node": (j, i)
-            })
-    solution[(0, 0)]["sd"] = 0
+    visited = []
 
-    from queue import PriorityQueue
+    res = {v: float("inf") for v in range(len(matrix))}
+    res[0] = 0
     pq = PriorityQueue()
     pq.put((0, (0, 0)))
 
     while not pq.empty():
         (dist, current_vertex) = pq.get()
-        visited.add(current_vertex)
+        visited.append(current_vertex)
 
-
-        for n in range(len(matrix)*len(matrix)):
-            
-
-
-        obj = min(solution.values(), key=lambda x: x["sd"])
-        node = obj["node"]
-        prev_dist = obj["sd"]
-        j, i = node[0], node[1]
-
-        if j - 1 >= 0 and (j - 1, i) not in visited:
-            up = matrix[j - 1][i]
-            solution[(j - 1, i)]["sd"] = min(solution[(j - 1), i]["sd"],
-                                             prev_dist + up)
-            solution[(j - 1), i]["prev"] = node
-        if j + 1 < len(matrix) and (j + 1, i) not in visited:
-            down = matrix[j + 1][i]
-            solution[(j + 1, i)]["sd"] = min(solution[(j + 1, i)]["sd"],
-                                             prev_dist + down)
-            solution[(j + 1, i)]["prev"] = node
-        if i - 1 >= 0 and (j, i - 1) not in visited:
-            left = matrix[j][i - 1]
-            known_distance = solution[(j, i - 1)]["sd"]
-            solution[(j, i - 1)]["sd"] = min(known_distance, prev_dist + left)
-            solution[(j, i - 1)]["prev"] = node
-        if i + 1 < len(matrix) and (j, i + 1) not in visited:
-            right = matrix[j][i + 1]
-            known_distance = solution[(j, i + 1)]["sd"]
-            solution[(j, i + 1)]["sd"] = min(known_distance, prev_dist + right)
-            solution[(j, i + 1)]["prev"] = node
-
-        visited.add(node)
-
-    print(solution[(len(matrix) - 1, len(matrix) - 1)])
-
-    # if i == 0 and j == 0:
-    #     continue
-    # elif j - 1 < 0:
-    #     matrix[i][j] += matrix[i - 1][j]
-    # elif i - 1 < 0:
-    #     matrix[i][j] += matrix[i][j - 1]
-    # else:
-    #     matrix[i][j] += min(matrix[i][j - 1], matrix[i - 1][j], )
-
-    # for r in matrix:
-    #     print(r)
-    print(matrix[-1][-1] - matrix[0][0])
+        for neighbor in get_neighbors(matrix, current_vertex):
+            pass
+            # if matrix[current_vertex][neighbor] != -1:
+            #     distance = matrix[current_vertex][neighbor]
+            #     if neighbor not in visited:
+            #         old_cost = D[neighbor]
+            #         new_cost = D[current_vertex] + distance
+            #         if new_cost < old_cost:
+            #             pq.put((new_cost, neighbor))
+            #             D[neighbor] = new_cost
+    for vertex in range(len(res)):
+        print("Distance from vertex 0 to vertex", vertex, "is", res[vertex])
 
 
 if __name__ == "__main__":
