@@ -37,7 +37,7 @@ def main():
 
 
 def handle_packet(bit_string):
-    print(bit_string)
+    print("Packet: ", bit_string)
     only_zeros = sum([int(x) for x in bit_string])
     if len(bit_string) < 6 or only_zeros == 0:
         return 0, 0, ""
@@ -55,14 +55,29 @@ def handle_packet(bit_string):
         return version, type_id, bit_string[6 + step + 5:]
     else:
         length_type_id = bit_string[6]
+        print("length type id: ", length_type_id)
         if length_type_id == "0":
             sub_packet_length = int(bit_string[7:22], 2)
-            return version, type_id, bit_string[22 + sub_packet_length:]
+            print("sub packet length: ", sub_packet_length)
+            length = 0
+            sub_packet = bit_string[22:]
+            prev_sub_packet = sub_packet
+            while length != sub_packet_length:
+                v, _, sub_packet = handle_packet(sub_packet)
+                length += len(prev_sub_packet) - len(sub_packet)
+                version += v
+                prev_sub_packet = sub_packet
+
+            return version, type_id, sub_packet
         elif length_type_id == "1":
             number_of_subpackets = int(bit_string[7:18], 2)
 
-            return version, type_id, bit_string[18 +
-                                                number_of_subpackets * 11:]
+            sub_packet = bit_string[18:]
+            for _ in range(number_of_subpackets):
+                v, _, sub_packet = handle_packet(sub_packet)
+                version += v
+
+            return version, type_id, sub_packet
 
 
 if __name__ == "__main__":

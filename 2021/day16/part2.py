@@ -1,117 +1,102 @@
-from copy import deepcopy
-
-
-def bump_matrix(matrix):
-    cm = deepcopy(matrix)
-    for i in range(len(cm)):
-        for j in range(len(cm[i])):
-            cm[i][j] += 1
-            if cm[i][j] == 10:
-                cm[i][j] = 1
-    return cm
-
-
-def create_matrix_row(matrix, length):
-    big_chungus_matrix_row = deepcopy(matrix)
-    bumpped_matrix = deepcopy(matrix)
-    for _ in range(length):
-        a = bump_matrix(bumpped_matrix)
-        for i in range(len(a)):
-            for j in range(len(a[i])):
-                big_chungus_matrix_row[i].append(a[i][j])
-        bumpped_matrix = a
-    return big_chungus_matrix_row
-
-
-import numpy as np
+from functools import reduce
+import operator
 
 
 def main():
     matrix = []
     with open('input.txt') as matrix:
-        matrix = [[int(x) for x in list(y)] for y in matrix.read().split("\n")]
+        matrix = matrix.read()
 
-    first_row = create_matrix_row(matrix, 4)
-    r = deepcopy(matrix)
-    for i in range(4):
-        r = bump_matrix(r)
-        second = create_matrix_row(r, 4)
-        for z in second:
-            first_row.append(z)
+    hex_to_bits = {
+        "0": "0000",
+        "1": "0001",
+        "2": "0010",
+        "3": "0011",
+        "4": "0100",
+        "5": "0101",
+        "6": "0110",
+        "7": "0111",
+        "8": "1000",
+        "9": "1001",
+        "A": "1010",
+        "B": "1011",
+        "C": "1100",
+        "D": "1101",
+        "E": "1110",
+        "F": "1111",
+    }
+    bit = "".join([hex_to_bits[x] for x in matrix])
+    _, result = handle_packet(bit)
 
-    matrix = first_row
-    visited = set()
-    solution = {}
-    unvisited = []
-    for i, row in enumerate(matrix):
-        for j, _ in enumerate(row):
-            solution[(j, i)] = {
-                "prev": None,
-                "sd": float('inf'),
-                "node": (j, i)
-            }
-            unvisited.append({
-                "prev": None,
-                "sd": float('inf'),
-                "node": (j, i)
-            })
-    solution[(0, 0)]["sd"] = 0
-
-    from queue import PriorityQueue
-    pq = PriorityQueue()
-    pq.put((0, (0, 0)))
-
-    while not pq.empty():
-        (dist, current_vertex) = pq.get()
-        visited.add(current_vertex)
+    print("RESULT: ", result)
 
 
-        for n in range(len(matrix)*len(matrix)):
-            
+def handle_packet(bit_string):
+    only_zeros = sum([int(x) for x in bit_string])
+    if len(bit_string) < 6 or only_zeros == 0:
+        return "", 0
+    type_id = int(bit_string[3:6], 2)
+    if type_id == 4:
+        value = bit_string[6:]
+        step = 0
+        literal_value = ""
+        while True:
+            bits = value[step:step + 5]
+            literal_value += bits[1:]
+            if bits[0] == "0":
+                break
+            step += 5
+        return bit_string[6 + step + 5:], int(literal_value, 2)
+
+    elif type_id == 0:
+        bts, res = handle_sub_packet(bit_string)
+        return bts, sum(res)
+
+    elif type_id == 1:
+        bts, res = handle_sub_packet(bit_string)
+        return bts, reduce(operator.mul, res)
+    elif type_id == 2:
+        bts, res = handle_sub_packet(bit_string)
+        return bts, min(res)
+    elif type_id == 3:
+        bts, res = handle_sub_packet(bit_string)
+        return bts, max(res)
+    elif type_id == 5:
+        bts, res = handle_sub_packet(bit_string)
+        return bts, 1 if res[0] > res[1] else 0
+    elif type_id == 6:
+        bts, res = handle_sub_packet(bit_string)
+        return bts, 1 if res[0] < res[1] else 0
+    elif type_id == 7:
+        bts, res = handle_sub_packet(bit_string)
+        return bts, 1 if res[0] == res[1] else 0
 
 
-        obj = min(solution.values(), key=lambda x: x["sd"])
-        node = obj["node"]
-        prev_dist = obj["sd"]
-        j, i = node[0], node[1]
+def handle_sub_packet(bit_string):
+    length_type_id = bit_string[6]
+    if length_type_id == "0":
+        sub_packet_length = int(bit_string[7:22], 2)
+        length = 0
+        sub_packet = bit_string[22:]
+        prev_sub_packet = sub_packet
+        res = []
+        while length != sub_packet_length:
+            sub_packet, lv = handle_packet(sub_packet)
+            length += len(prev_sub_packet) - len(sub_packet)
+            res.append(lv)
+            prev_sub_packet = sub_packet
 
-        if j - 1 >= 0 and (j - 1, i) not in visited:
-            up = matrix[j - 1][i]
-            solution[(j - 1, i)]["sd"] = min(solution[(j - 1), i]["sd"],
-                                             prev_dist + up)
-            solution[(j - 1), i]["prev"] = node
-        if j + 1 < len(matrix) and (j + 1, i) not in visited:
-            down = matrix[j + 1][i]
-            solution[(j + 1, i)]["sd"] = min(solution[(j + 1, i)]["sd"],
-                                             prev_dist + down)
-            solution[(j + 1, i)]["prev"] = node
-        if i - 1 >= 0 and (j, i - 1) not in visited:
-            left = matrix[j][i - 1]
-            known_distance = solution[(j, i - 1)]["sd"]
-            solution[(j, i - 1)]["sd"] = min(known_distance, prev_dist + left)
-            solution[(j, i - 1)]["prev"] = node
-        if i + 1 < len(matrix) and (j, i + 1) not in visited:
-            right = matrix[j][i + 1]
-            known_distance = solution[(j, i + 1)]["sd"]
-            solution[(j, i + 1)]["sd"] = min(known_distance, prev_dist + right)
-            solution[(j, i + 1)]["prev"] = node
+        return sub_packet, res
+    elif length_type_id == "1":
+        number_of_subpackets = int(bit_string[7:18], 2)
 
-        visited.add(node)
+        sub_packet = bit_string[18:]
+        res = []
+        for _ in range(number_of_subpackets):
+            sub_packet, lv = handle_packet(sub_packet)
+            res.append(lv)
 
-    print(solution[(len(matrix) - 1, len(matrix) - 1)])
-
-    # if i == 0 and j == 0:
-    #     continue
-    # elif j - 1 < 0:
-    #     matrix[i][j] += matrix[i - 1][j]
-    # elif i - 1 < 0:
-    #     matrix[i][j] += matrix[i][j - 1]
-    # else:
-    #     matrix[i][j] += min(matrix[i][j - 1], matrix[i - 1][j], )
-
-    # for r in matrix:
-    #     print(r)
-    print(matrix[-1][-1] - matrix[0][0])
+        return sub_packet, res
 
 
 if __name__ == "__main__":
