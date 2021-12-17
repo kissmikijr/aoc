@@ -52,7 +52,6 @@ def handle_packet(bit_string):
         bts, res = handle_sub_packet(bit_string)
         if type_id == 0:
             return bts, sum(res)
-
         elif type_id == 1:
             return bts, reduce(operator.mul, res)
         elif type_id == 2:
