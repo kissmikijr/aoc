@@ -48,28 +48,23 @@ def handle_packet(bit_string):
             step += 5
         return bit_string[6 + step + 5:], int(literal_value, 2)
 
-    elif type_id == 0:
+    else:
         bts, res = handle_sub_packet(bit_string)
-        return bts, sum(res)
+        if type_id == 0:
+            return bts, sum(res)
 
-    elif type_id == 1:
-        bts, res = handle_sub_packet(bit_string)
-        return bts, reduce(operator.mul, res)
-    elif type_id == 2:
-        bts, res = handle_sub_packet(bit_string)
-        return bts, min(res)
-    elif type_id == 3:
-        bts, res = handle_sub_packet(bit_string)
-        return bts, max(res)
-    elif type_id == 5:
-        bts, res = handle_sub_packet(bit_string)
-        return bts, 1 if res[0] > res[1] else 0
-    elif type_id == 6:
-        bts, res = handle_sub_packet(bit_string)
-        return bts, 1 if res[0] < res[1] else 0
-    elif type_id == 7:
-        bts, res = handle_sub_packet(bit_string)
-        return bts, 1 if res[0] == res[1] else 0
+        elif type_id == 1:
+            return bts, reduce(operator.mul, res)
+        elif type_id == 2:
+            return bts, min(res)
+        elif type_id == 3:
+            return bts, max(res)
+        elif type_id == 5:
+            return bts, 1 if res[0] > res[1] else 0
+        elif type_id == 6:
+            return bts, 1 if res[0] < res[1] else 0
+        elif type_id == 7:
+            return bts, 1 if res[0] == res[1] else 0
 
 
 def handle_sub_packet(bit_string):
