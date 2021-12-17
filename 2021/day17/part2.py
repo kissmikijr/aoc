@@ -2,12 +2,6 @@ import numpy as np
 
 
 def main():
-    # matrix = []
-    # with open('input.txt') as matrix:
-    #     matrix = matrix.read()
-    # print(matrix)
-    # target area: x=20..30, y=-10..-5
-    # target area: x=56..76, y=-162..-134
     x1, x2 = 20, 30
     y1, y2 = -10, -5
 
@@ -19,9 +13,7 @@ def main():
         for j in range(y1, y2 + 1):
             target_area.add((i, j))
     paths = []
-    # for i in range(len(matrix) - 1):
-    #     for j in range(len(matrix) - 1):
-    #         probe_x, probe_y = j + x1, i + y1
+
     for x in range(0, x2 + 1):
         for y in range(y1, abs(y1)):
             vel_x, vel_y = x, y
@@ -44,10 +36,8 @@ def main():
                 else:
                     vel_x = 0
                 vel_y -= 1
-    print(len(paths), len(target_area))
     for p in paths:
         target_area.add(p[1])
-    print(len(paths), len(target_area))
 
     max_y = 0
     for p in paths:
