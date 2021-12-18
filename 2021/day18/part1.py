@@ -6,7 +6,6 @@ def add(left, right):
     return f"[{left},{right}]"
 
 
-# [[[[[9,8],1],2],3],4]
 def add_to_left_regular_number(number, num_to_add, span):
     left_sub_string = number[:span[0]]
     right_sub_string = number[span[0]:]
