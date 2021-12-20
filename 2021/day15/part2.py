@@ -24,20 +24,20 @@ def create_matrix_row(matrix, length):
     return big_chungus_matrix_row
 
 
-def get_neighbors(matrix, node):
+def get_neighbors(matrix, node, visited):
     j, i = node[0], node[1]
 
     neighbors = []
-    if j - 1 >= 0 and (j - 1, i):
-        neighbors.append(matrix[j - 1][i])
-    if j + 1 < len(matrix):
-        neighbors.append(matrix[j + 1][i])
-    if i - 1 >= 0 and (j, i - 1):
-        neighbors.append(matrix[j][i - 1])
-    if i + 1 < len(matrix):
-        neighbors.append(matrix[j][i + 1])
+    if j - 1 >= 0 and (j - 1, i) not in visited:
+        neighbors.append((j - 1, i))
+    if j + 1 < len(matrix) and (j + 1, i) not in visited:
+        neighbors.append((j + 1, i))
+    if i - 1 >= 0 and (j, i - 1) not in visited:
+        neighbors.append((j, i - 1))
+    if i + 1 < len(matrix) and (j, i + 1) not in visited:
+        neighbors.append((j, i + 1))
 
-    return []
+    return neighbors
 
 
 def main():
@@ -54,29 +54,30 @@ def main():
             first_row.append(z)
 
     matrix = first_row
-    visited = []
+    visited = set()
 
-    res = {v: float("inf") for v in range(len(matrix))}
-    res[0] = 0
+    res = [[float("inf")] * len(matrix) for v in range(len(matrix))]
+    res[0][0] = 0
     pq = PriorityQueue()
     pq.put((0, (0, 0)))
-
+    counter = 0
     while not pq.empty():
-        (dist, current_vertex) = pq.get()
-        visited.append(current_vertex)
+        print(counter)
+        (dist, cv) = pq.get()
+        visited.add(cv)
 
-        for neighbor in get_neighbors(matrix, current_vertex):
-            pass
-            # if matrix[current_vertex][neighbor] != -1:
-            #     distance = matrix[current_vertex][neighbor]
-            #     if neighbor not in visited:
-            #         old_cost = D[neighbor]
-            #         new_cost = D[current_vertex] + distance
-            #         if new_cost < old_cost:
-            #             pq.put((new_cost, neighbor))
-            #             D[neighbor] = new_cost
-    for vertex in range(len(res)):
-        print("Distance from vertex 0 to vertex", vertex, "is", res[vertex])
+        for neighbor in get_neighbors(matrix, cv, visited):
+            x, y = neighbor[0], neighbor[1]
+            distance = matrix[x][y]
+            if neighbor not in visited:
+                old_cost = res[x][y]
+                new_cost = res[cv[0]][cv[1]] + distance
+                if new_cost < old_cost:
+                    pq.put((new_cost, neighbor))
+                    res[x][y] = new_cost
+        counter += 1
+
+    print(res[-1][-1])
 
 
 if __name__ == "__main__":
