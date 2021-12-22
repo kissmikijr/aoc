@@ -26,7 +26,6 @@ def roll(scores, pos, turn):
                           (current_pos[0], current_pos[1]), 1 - turn)
             wins[0] += p1
             wins[1] += p2
-
     return wins
 
 
