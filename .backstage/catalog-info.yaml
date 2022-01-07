@@ -1,1 +1,9 @@
-awesome catalog info.yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: advent-of-code
+  namespace: kissmikijr
+  description: Repository to host the code for Advent of Code Awesome description
+spec:
+  type: service
+  lifecycle: experimental
