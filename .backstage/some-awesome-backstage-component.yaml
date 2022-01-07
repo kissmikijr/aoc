@@ -6,4 +6,5 @@ metadata:
   description: Repository to host the code for Advent of Code Awesome description
 spec:
   type: service
+  owner: kissmikijr
   lifecycle: experimental
