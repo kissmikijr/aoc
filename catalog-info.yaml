@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: advent-of-code
   namespace: kissmikijr
-  description: Repository to host the code for Advent of Code
+  description: Repository to host the code for Advent of Code Awesome description
 spec:
   type: service
   owner: kissmikijr
