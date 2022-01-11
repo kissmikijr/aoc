@@ -2,7 +2,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: advent-of-code
-  namespace: kissmikijr
+  namespace: sometest
   description: Repository to host the code for Advent of Code Awesome description
 spec:
   type: service
