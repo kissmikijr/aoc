@@ -7,6 +7,7 @@ metadata:
   annotations:
     github.com/project-slug: kissmikijr/aoc
     
+spec:    
   type: service
   owner: kissmikijr
   lifecycle: experimental
