@@ -4,7 +4,9 @@ metadata:
   name: advent-of-code
   namespace: kissmikijr
   description: Repository to host the code for Advent of Code
-spec:
+  annotations:
+    github.com/project-slug: kissmikijr/aoc
+    
   type: service
   owner: kissmikijr
   lifecycle: experimental
