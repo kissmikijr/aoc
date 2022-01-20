@@ -6,7 +6,6 @@ metadata:
   description: Repository to host the code for Advent of Code
   annotations:
     github.com/project-slug: kissmikijr/aoc
-    
 spec:    
   type: service
   owner: kissmikijr
