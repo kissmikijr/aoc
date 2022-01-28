@@ -5,5 +5,5 @@ metadata:
 spec:
   type: file
   targets:
-    - ./component-1.yaml
-    - ./component-2.yaml
+    - component-1.yaml
+    - component-2.yaml
