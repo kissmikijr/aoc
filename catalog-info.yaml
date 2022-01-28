@@ -1,9 +1,13 @@
 apiVersion: backstage.io/v1alpha1
-kind: Location
+kind: Component
 metadata:
-  name: my-components
-spec:
-  type: file
-  targets:
-    - component-1.yaml
-    - component-2.yaml
+  name: advent-of-code
+  namespace: kissmikijr
+  description: Repository to host the code for Advent of Code
+  annotations:
+    github.com/project-slug: kissmikijr/aoc
+spec:    
+  type: service
+  owner: kissmikijr
+  lifecycle: experimental
+  
