@@ -6,21 +6,20 @@ def part1(input: str):
     cycle = 1
     X = 1
     cycles_to_count = [20,60,100,140,180,220]
-    while cycle <= 220:
-        for row in lines:
-            instruction, value = row.split()
-            if instruction == 'noop':
-                cycle += 1
-                if cycle in cycles_to_count:
-                    result += X * cycle
-            elif instruction == 'addx':
-                cycle += 1
-                if cycle in cycles_to_count:
-                    result += X * cycle
-                cycle += 1
-                X += int(value)
-                if cycle in cycles_to_count:
-                    result += X * cycle
+    for row in lines:
+        instruction, value = row.split()
+        if instruction == 'noop':
+            cycle += 1
+            if cycle in cycles_to_count:
+                result += X * cycle
+        elif instruction == 'addx':
+            cycle += 1
+            if cycle in cycles_to_count:
+                result += X * cycle
+            cycle += 1
+            X += int(value)
+            if cycle in cycles_to_count:
+                result += X * cycle
 
 
     print("Part1: ", result)
