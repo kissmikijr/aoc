@@ -1,5 +1,4 @@
 import subprocess
-# import ../../utils
 
 def part1(input: str):
     lines = input.split('\n')
