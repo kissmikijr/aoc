@@ -142,7 +142,7 @@ def part2(input: str):
                 # inspect
                 new_worry = m["opeartion"](item)
                 #reliefe
-                new_worry %= lcm
+                new_worry = new_worry % lcm
                 #throw
                 m["test"](new_worry, monkey_items)
             monkey_items[i] = []
