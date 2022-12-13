@@ -15,3 +15,5 @@
 # vendor/
 node_modules
 .env
+input.txt
+input-test.txt
