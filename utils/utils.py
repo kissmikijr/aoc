@@ -1,7 +1,7 @@
 import re
 
 def ints(input: str):
-    return re.findall(r'\d+', input)
+    return [int(x) for x in re.findall(r'-?\d+', input)]
 
 def parse_to_grid(input,delimeter="\n"):
     return [[x for x in y] for y in input.split(delimeter)]
