@@ -35,9 +35,7 @@ def main2():
     score = 0
     for line in input_text.read().split('\n'):
         game = line.split(':')
-        id = ints(game[0])
         sets = game[1].split(';')
-        valid = True
         max_red = 0
         max_green = 0
         max_blue = 0
