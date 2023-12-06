@@ -12,17 +12,16 @@ def main():
         a = line.split(':')
         winning = a[1].split('|')[0]
         mine = a[1].split('|')[1]
-        w = sorted(ints(winning))
-        m = sorted(ints(mine))
+        w = ints(winning)
+        m = ints(mine)
         power = 0
         s = 0
         for i in range(len(m)):
             if m[i] in w:
-                p = pow(2, power)
-                print(m[i], p)
                 s = pow(2, power)
                 power+=1
         score += s
+    print('part1:', score)
 
 def main2():
     input_text = open('input.txt', 'r')
@@ -48,13 +47,6 @@ def main2():
     for cards in scratch_cards:
         idx, _,_ = cards
         score += copies[idx]
-    print(score)
-
-
-
-
-
-
 
     print('part2:', score)
 
