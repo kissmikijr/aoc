@@ -23,13 +23,13 @@ values = {
 
 def hand_type(hand):
     counts = Counter(hand)
-    is_full_house = False
+    three_pair = False
     two_pair = False
     rank = 0
     for card, count in sorted(counts.items(), key= lambda x: x[1], reverse=True):
         if rank > 0:
             break
-        if is_full_house:
+        if three_pair:
             # full house
             if count == 2:
                 rank = 5
@@ -50,7 +50,7 @@ def hand_type(hand):
         elif count == 4:
             rank = 6
         elif count == 3:
-            is_full_house = True
+            three_pair = True
         elif count == 2:
             two_pair = True
         #high card
