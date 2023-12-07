@@ -1,121 +1,167 @@
-import subprocess
-from collections import defaultdict
+import re
+from collections import Counter
 
-def part1(input: str):
-    lines = input.split('\n')
-    result = 0
-    i = 0
-    fs = defaultdict(lambda: {'file_sizes':0, "sub_dirs":[]})
-    cwd_stack = []
-    while i < len(lines):
-        if lines[i].startswith('$'):
-            _, command, value = lines[i].split(' ')
-            if command == 'cd':
-                if value == '..':
-                    cwd_stack.pop()
-                else:
-                    cwd_stack.append(value)
+def ints(input: str):
+    return [int(x) for x in re.findall(r'-?\d+', input)]
 
-        else:
-            # this is $ ls command
-            
-            size_or_dir, path = lines[i].split(' ')
-            cwd = "/".join(cwd_stack)
-            if size_or_dir == 'dir':
-                fs[cwd]['sub_dirs'].append(cwd+'/'+path)
-                fs[cwd+'/'+path] = {'file_sizes':0, "sub_dirs":[]}
+
+values = {
+    '2':2,
+    '3':3,
+    '4': 4,
+    '5':5,
+    '6': 6,
+    '7':7,
+    '8':8,
+    '9':9,
+    'T': 10,
+    'J': 11,
+    'Q': 12,
+    'K': 13,
+    'A': 14
+}
+
+def hand_type(hand):
+    counts = Counter(hand)
+    is_full_house = False
+    two_pair = False
+    rank = 0
+    for card, count in sorted(counts.items(), key= lambda x: x[1], reverse=True):
+        if rank > 0:
+            break
+        if is_full_house:
+            # full house
+            if count == 2:
+                rank = 5
+            # three of a kind
             else:
-                fs[cwd]['file_sizes'] += int(size_or_dir)
+                rank = 4
+        elif two_pair == True:
+            # two pair
+            if count == 2:
+                rank = 3
+            # one pair
+            elif count == 1:
+                rank = 2
+        # Five of a kind
+        elif count == 5:
+            rank = 7
+        # Five four of a kind
+        elif count == 4:
+            rank = 6
+        elif count == 3:
+            is_full_house = True
+        elif count == 2:
+            two_pair = True
+        #high card
+        elif count == 1:
+            rank = 1
+    return rank
 
 
-        i += 1
-    dir_sizes = []
-    for _,dir in fs.items():
-        dir_size = dir['file_sizes']
-        dir_size += sub_dir_sizes(dir['sub_dirs'], fs)
-
-        dir_sizes.append(dir_size)
 
 
-    for ds in dir_sizes:
-        if ds > 100000:
-            continue
-        else: 
-            result += ds
-
-    print('Part1: ',result)
-    return str(result)
-
-def sub_dir_sizes(sub_dirs, fs):
-    result = 0
-    for sub_dir in sub_dirs:
-        dir = fs.get(sub_dir)
-
-        dir_size = dir.get('file_sizes')
-        dir_size += sub_dir_sizes(dir.get('sub_dirs'), fs)
-
-        result += dir_size
-    return result
-
-def part2(input: str):
-    lines = input.split('\n')
-    result = 0
-    i = 0
-    fs = defaultdict(lambda: {'file_sizes':0, "sub_dirs":[]})
-    cwd_stack = []
-    while i < len(lines):
-        if lines[i].startswith('$'):
-            _, command, value = lines[i].split(' ')
-            if command == 'cd':
-                if value == '..':
-                    cwd_stack.pop()
-                else:
-                    cwd_stack.append(value)
-
-        else:
-            # this is $ ls command
-            
-            size_or_dir, path = lines[i].split(' ')
-            cwd = "/".join(cwd_stack)
-            if size_or_dir == 'dir':
-                fs[cwd]['sub_dirs'].append(cwd+'/'+path)
-                fs[cwd+'/'+path] = {'file_sizes':0, "sub_dirs":[]}
-            else:
-                fs[cwd]['file_sizes'] += int(size_or_dir)
 
 
-        i += 1
-    dir_sizes = []
-    for _,dir in fs.items():
-        dir_size = dir['file_sizes']
-        dir_size += sub_dir_sizes(dir['sub_dirs'], fs)
-
-        dir_sizes.append(dir_size)
-
-
-    disk_size = 70000000
-    needed_space = 30000000
-    current_unused_space = disk_size - max(dir_sizes) 
-    required_space = needed_space - current_unused_space
-
-    potentials = []
-    for ds in dir_sizes:
-        if ds > required_space:
-            potentials.append(ds)
-    result += min(potentials) 
-
-    print('Part2: ',result)
-    return result
-
-# 1978318
-
-if __name__ == '__main__':
+def main():
     input_text = open('input.txt', 'r')
-    input: str = input_text.read()
+    score = 0
+    hand_in_ints = []
+    for line in input_text.read().split('\n'):
+        hand, bid = line.split(' ')
+        tmp = []
+        for c in hand:
+            tmp.append(values[c])
+        hand_in_ints.append([tmp, bid])
+    sorted_hands = sorted(hand_in_ints, key=lambda x: (hand_type(x[0]), x[0][0], x[0][1], x[0][2], x[0][3], x[0][4]))
+    for i, hand in enumerate(sorted_hands):
+        score += int(hand[1]) * (i+1)
 
-    result = part2(input)
-    if not result:
-        result = part1(input)
+
+    print('part1:', score)
+
+values2 = {
+    '2':2,
+    '3':3,
+    '4': 4,
+    '5':5,
+    '6': 6,
+    '7':7,
+    '8':8,
+    '9':9,
+    'T': 10,
+    'J': 1,
+    'Q': 12,
+    'K': 13,
+    'A': 14
+}
 
 
-    subprocess.run(['pbcopy'], input=str(result).encode('utf-8'))
+def hand_type2(hand):
+    counts = Counter(hand)
+    jokers = 0
+    if 1 in hand:
+        jokers = counts[1]
+        counts.pop(1)
+
+    if jokers == 5:
+        return 7
+
+    counts_tuple = sorted(counts.items(), key= lambda x: x[1], reverse=True)
+    counts_list = [list(x) for x in counts_tuple]
+    counts_list[0][1] += jokers
+
+    is_full_house = False
+    two_pair = False
+    rank = 0
+    for card, count in counts_list:
+        if rank > 0:
+            break
+        if is_full_house:
+            # full house
+            if count == 2:
+                rank = 5
+            # three of a kind
+            else:
+                rank = 4
+        elif two_pair == True:
+            # two pair
+            if count == 2:
+                rank = 3
+            # one pair
+            elif count == 1:
+                rank = 2
+        # Five of a kind
+        elif count == 5:
+            rank = 7
+        # Five four of a kind
+        elif count == 4:
+            rank = 6
+        elif count == 3:
+            is_full_house = True
+        elif count == 2:
+            two_pair = True
+        #high card
+        elif count == 1:
+            rank = 1
+    return rank
+
+def main2():
+    input_text = open('input.txt', 'r')
+    score = 0
+    hand_in_ints = []
+    for line in input_text.read().split('\n'):
+        hand, bid = line.split(' ')
+        tmp = []
+        for c in hand:
+            tmp.append(values2[c])
+        hand_in_ints.append([tmp, bid])
+    sorted_hands = sorted(hand_in_ints, key=lambda x: (hand_type2(x[0]), x[0][0], x[0][1], x[0][2], x[0][3], x[0][4]))
+    for i, hand in enumerate(sorted_hands):
+        score += int(hand[1]) * (i+1)
+
+    print('part2:', score)
+
+
+main()
+main2()
