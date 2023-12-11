@@ -1,168 +1,112 @@
-import subprocess
-from functools import reduce
-from operator import add, mul
-import math
+import re
+import itertools
 
-def test(item,monkey_items, divisor, on_true, on_false):
+def ints(input: str):
+    return [int(x) for x in re.findall(r'-?\d', input)]
 
+def parse_to_grid(input,delimeter="\n"):
+    return [[x for x in y] for y in input.split(delimeter)]
 
-    if item % divisor == 0:
-        monkey_items[on_true].append(item)
-    else:
-        monkey_items[on_false].append(item)
+def empty_grid_x_by_y(filler, x, y):
+    r = []
+    for _ in range(x):
+        t = []
+        for _ in range(y):
+            t.append(filler)
+        r.append(t)
+    return r
 
-    return monkey_items
+def expand(grid):
+    expanded_x = []
+    for y in range(len(grid)):
+        if '#' not in grid[y]:
+            for i in range(2):
+                expanded_x.append(grid[y])
+        else:
+            expanded_x.append(grid[y])
 
-def part1(input: str):
-    result = 0
-    i = 0
-    monkey_items = [
-        [63, 84, 80, 83, 84, 53, 88, 72],
-        [67, 56, 92, 88, 84],
-        [52],
-        [59, 53, 60, 92, 69, 72],
-        [61, 52, 55, 61],
-        [79, 53],
-        [59, 86, 67, 95, 92, 77, 91],
-        [58, 83, 89],
-    ]
-    inspect_counts = [0,0,0,0,0,0,0,0]
-    monkeys = [
-        {
-            "opeartion": lambda o: o*11,
-            "test": lambda item, monkeys: test(item, monkeys, 13, 4, 7)
-        },
-        {
-            "opeartion": lambda o: o+4,
-            "test": lambda item, monkeys: test(item, monkeys, 11, 5, 3)
-        },
-                {
-            "opeartion": lambda o: o*o,
-            "test": lambda item, monkeys: test( item, monkeys, 2, 3, 1)
-        },
-                {
-            "opeartion": lambda o: o+2,
-            "test": lambda  item, monkeys: test( item, monkeys, 5, 5, 6)
-        },
-                {
-            "opeartion": lambda o: o+3,
-            "test": lambda item, monkeys: test( item, monkeys, 7, 7, 2)
-        },
-                {
-            "opeartion": lambda o: o+1,
-            "test": lambda  item, monkeys: test( item, monkeys, 3, 0, 6)
-        }
-        ,
-                {
-            "opeartion": lambda o: o+5,
-            "test": lambda  item, monkeys: test( item, monkeys, 19, 4, 0)
-        },
-        {
-            "opeartion": lambda o: o*19,
-            "test": lambda item, monkeys: test( item, monkeys, 17, 2, 1)
-        }
-    ]
-    max_rounds = 20
-    round = 0
-    while round < max_rounds:
-        for i, m in enumerate(monkeys):
-            for item in monkey_items[i]:
-                inspect_counts[i] += 1
-                # inspect
-                new_worry = m["opeartion"](item)
-                #reliefe
-                new_worry = new_worry // 3
-                #throw
-                m["test"](new_worry, monkey_items)
-            monkey_items[i] = []
-        round += 1
+    xs_to_expand = []
+    for x in range(len(grid[0])):
+        col = []
+        for y in range(len(grid)):
+            col.append(grid[y][x])
+        if '#' not in col:
+            xs_to_expand.append(x)
 
-    s = sorted(inspect_counts, reverse=True)
-    result = s[0] * s[1]
-    print("Part1: ", result)
-    return result
+    expanded = []
+    for y in range(len(expanded_x)):
+        exp_row = []
+        for x in range(len(expanded_x[y])):
+            if x in xs_to_expand:
+                for i in range(2):
+                    exp_row.append('.')
+            else:
+                exp_row.append(expanded_x[y][x])
+        expanded.append(exp_row)
+    return expanded
 
-def part2(input: str):
-    result = 0
-    i = 0
-    monkey_items = [
-        [63, 84, 80, 83, 84, 53, 88, 72],
-        [67, 56, 92, 88, 84],
-        [52],
-        [59, 53, 60, 92, 69, 72],
-        [61, 52, 55, 61],
-        [79, 53],
-        [59, 86, 67, 95, 92, 77, 91],
-        [58, 83, 89],
-    ]
-    inspect_counts = [0,0,0,0,0,0,0,0]
-    monkeys = [
-        {
-            "opeartion": lambda o: o*11,
-            "test": lambda item, monkeys: test(item, monkeys, 13, 4, 7)
-        },
-        {
-            "opeartion": lambda o: o+4,
-            "test": lambda item, monkeys: test(item, monkeys, 11, 5, 3)
-        },
-                {
-            "opeartion": lambda o: o*o,
-            "test": lambda item, monkeys: test( item, monkeys, 2, 3, 1)
-        },
-                {
-            "opeartion": lambda o: o+2,
-            "test": lambda  item, monkeys: test( item, monkeys, 5, 5, 6)
-        },
-                {
-            "opeartion": lambda o: o+3,
-            "test": lambda item, monkeys: test( item, monkeys, 7, 7, 2)
-        },
-                {
-            "opeartion": lambda o: o+1,
-            "test": lambda  item, monkeys: test( item, monkeys, 3, 0, 6)
-        }
-        ,
-                {
-            "opeartion": lambda o: o+5,
-            "test": lambda  item, monkeys: test( item, monkeys, 19, 4, 0)
-        },
-        {
-            "opeartion": lambda o: o*19,
-            "test": lambda item, monkeys: test( item, monkeys, 17, 2, 1)
-        }
-    ]
-    max_rounds = 10000
-    round = 0
-    # least common multiple
-    lcm = math.lcm(13, 11, 2, 5, 7, 3, 19, 17) 
-    while round < max_rounds:
-        for i, m in enumerate(monkeys):
-            for item in monkey_items[i]:
-                inspect_counts[i] += 1
-                # inspect
-                new_worry = m["opeartion"](item)
-                #reliefe
-                new_worry = new_worry % lcm
-                #throw
-                m["test"](new_worry, monkey_items)
-            monkey_items[i] = []
-        round += 1
-
-    s = sorted(inspect_counts, reverse=True)
-    result = s[0] * s[1]
-    print("Part2: ", result)
-    return result
-
+def get_neighbours(grid, y, x ):
+    valid_neighbours = []
+    # left
+    if x-1 >= 0:
+        valid_neighbours.append((y, x-1))
+    # right
+    if x + 1 <= len(grid[0]) - 1:
+        valid_neighbours.append((y, x+1))
+    # top
+    if y - 1 >= 0:
+        valid_neighbours.append((y-1, x))
+    # bottom
+    if y + 1 <= len(grid) - 1:
+        valid_neighbours.append((y+1, x))
+    return valid_neighbours
 
 
 def main():
     input_text = open('input.txt', 'r')
-    input: str = input_text.read()
+    grid =parse_to_grid(input_text.read())
+    grid = expand(grid)
+    starting_points = []
+    score = 0
+    for y in range(len(grid)):
+        for x in range(len(grid[y])):
+            if grid[y][x] == '#':
+                starting_points.append((y, x))
 
-    result = part1(input)
-    result = part2(input)
-    if not result:
-        subprocess.run(['pbcopy'], input=str(result).encode('utf-8'))
+    for start, finish in itertools.combinations(starting_points, 2):
+        steps_grid = empty_grid_x_by_y(float('inf'),len(grid), len(grid[0]))
+        steps_grid[start[0]][start[1]] = 0
+        visited = set()
+        stack = [start]
+        while stack:
+            current = stack.pop()
+            cv = steps_grid[current[0]][current[1]]
+            if current in visited:
+                continue
+
+            visited.add(current)
+            neighbours = get_neighbours(grid, current[0], current[1])
+            neighbour_values = [cv]
+            for ny, nx in neighbours: 
+                neighbour_values.append(steps_grid[ny][nx])
+                stack.append((ny, nx))
+            steps_grid[current[0]][current[1]] = min(neighbour_values)+1
+
+
+
+        score += steps_grid[finish[0]][finish[1]] - 1
+
+    print('part1', score)
+
+def main2():
+
+    input_text = open('input.txt', 'r')
+    score = 0
+    for line in input_text.read().split('\n'):
+        pass
+        
+    print('part2:', score)
 
 
 main()
+main2()
