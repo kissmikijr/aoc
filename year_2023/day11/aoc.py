@@ -45,21 +45,22 @@ def expand(grid):
         expanded.append(exp_row)
     return expanded
 
-def get_neighbours(grid, y, x ):
-    valid_neighbours = []
-    # left
-    if x-1 >= 0:
-        valid_neighbours.append((y, x-1))
-    # right
-    if x + 1 <= len(grid[0]) - 1:
-        valid_neighbours.append((y, x+1))
-    # top
-    if y - 1 >= 0:
-        valid_neighbours.append((y-1, x))
-    # bottom
-    if y + 1 <= len(grid) - 1:
-        valid_neighbours.append((y+1, x))
-    return valid_neighbours
+def expand2(grid):
+    expanded_rows_y_index = []
+    expanded_cols_x_index = []
+    for y in range(len(grid)):
+        if '#' not in grid[y]:
+            expanded_rows_y_index.append(y)
+
+    for x in range(len(grid[0])):
+        col = []
+        for y in range(len(grid)):
+            col.append(grid[y][x])
+        if '#' not in col:
+            expanded_cols_x_index.append(x)
+
+    return sorted(expanded_rows_y_index, reverse=True), sorted(expanded_cols_x_index, reverse=True)
+
 
 
 def main():
@@ -74,39 +75,35 @@ def main():
                 starting_points.append((y, x))
 
     for start, finish in itertools.combinations(starting_points, 2):
-        steps_grid = empty_grid_x_by_y(float('inf'),len(grid), len(grid[0]))
-        steps_grid[start[0]][start[1]] = 0
-        visited = set()
-        stack = [start]
-        while stack:
-            current = stack.pop()
-            cv = steps_grid[current[0]][current[1]]
-            if current in visited:
-                continue
-
-            visited.add(current)
-            neighbours = get_neighbours(grid, current[0], current[1])
-            neighbour_values = [cv]
-            for ny, nx in neighbours: 
-                neighbour_values.append(steps_grid[ny][nx])
-                stack.append((ny, nx))
-            steps_grid[current[0]][current[1]] = min(neighbour_values)+1
-
-
-
-        score += steps_grid[finish[0]][finish[1]] - 1
+        score += abs(start[0] - finish[0]) + abs(start[1] - finish[1])
 
     print('part1', score)
 
 def main2():
-
     input_text = open('input.txt', 'r')
+    grid =parse_to_grid(input_text.read())
+    rrange = 1000000-1
+    expanded_rows_y_index, expanded_cols_x_index = expand2(grid)
+    starting_points = []
     score = 0
-    for line in input_text.read().split('\n'):
-        pass
-        
-    print('part2:', score)
+    for y in range(len(grid)):
+        for x in range(len(grid[y])):
+            if grid[y][x] == '#':
+                new_x = x
+                for xi in expanded_cols_x_index:
+                    if xi < x:
+                        new_x += rrange
+                new_y = y
+                for yi in expanded_rows_y_index:
+                    if yi < y:
+                        new_y += rrange
 
+                starting_points.append((new_y, new_x))
+
+    for start, finish in itertools.combinations(starting_points, 2):
+        score += abs(start[0] - finish[0]) + abs(start[1] - finish[1])
+
+    print('part2', score)
 
 main()
 main2()
