@@ -1,8 +1,7 @@
-import math
-import string
-from collections import defaultdict, deque
-from queue import PriorityQueue
-from functools import lru_cache
+import re
+
+def ints(input: str):
+    return [int(x) for x in re.findall(r'-?\d', input)]
 
 def parse_to_grid(input,delimeter="\n"):
     return [[x for x in y] for y in input.split(delimeter)]
@@ -16,36 +15,22 @@ def empty_grid_x_by_y(filler, x, y):
         r.append(t)
     return r
 
-def part1(input: str):
-    print(input)
-    packets = defaultdict(list)
-    i = 1
-    for l in input.split('\n'):
-        if l == '':
-            continue
-        packets[i].append(l)
-    print(packets)
-
-
-    result = None
-    print("Part1: ", result)
-    return result
-
-
-def part2(input: str):
-
-    result = None
-
-    print("Part2: ", result)
-    return result
 
 
 def main():
     input_text = open('input.txt', 'r')
-    input: str = input_text.read()
+    score = 0
+    for line in input_text.read().split('\n'):
+        arrangement, ways = line.split(' ')
+        possible_ways = ints(ways)
+    
+    print('part1', score)
 
+def main2():
+    input_text = open('input.txt', 'r')
 
-    part1(input)
-    part2(input)
+    score = 0
+    print('part2', score)
 
 main()
+main2()
